@@ -1,0 +1,71 @@
+#!/bin/bash
+
+mountdir="/media/usbbackup"
+device="/dev/sdd1"
+
+runfile="/var/run/usbbackup"
+
+sourceDir="/root/lala"
+targetDir="/media/usbbackup/Storage"
+
+beep_start() {
+	# Starting beep
+	beep -f 3000 -l 100 -r 2
+}
+
+beep_ok() {
+	# Ok beep
+	beep -f 3000 -l 100 -r 3 -n -f 3000 -l 500
+}
+
+beep_error() {
+	# Error beep
+	beep -f 2000 -l 1200 -r 3
+}
+
+# Exit if device does note exist
+if [ -b $device ]
+then
+	echo "Found $device"
+else
+	echo "Cannot find $device"
+	beep_error
+	exit 1
+fi
+
+if [ -e $runfile ]
+then
+	echo "Script already syncing"
+	beep_error
+	exit 1
+fi
+
+touch $runfile
+
+beep_start
+
+# Create mount directory if it does not already exist
+[ -d $mountdir ] || (mkdir $mountdir && echo "Created mount directory")
+
+# Mount drive if it is not already mounted
+if [ $(/bin/mount | grep -c $mountdir) != 1 ]
+then
+	echo "Mounting $device..."
+        /bin/mount $device $mountdir || exit 1
+        echo "$device is now mounted to $mountdir"
+else
+        echo "$mountdir already mounted"
+fi
+
+# Rsync job
+rsync -avh $sourceDir/ $targetDir
+
+# Sync changes
+sync
+
+# Unmount drive
+echo "Unmounting $device..."
+umount $mountdir
+
+rm $runfile
+beep_ok
