@@ -1,0 +1,1 @@
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd[a-z]1", ATTRS{idProduct}=="0030", ATTRS{idVendor}=="80ee", RUN+="/usr/local/bin/usbbackup"
