@@ -23,12 +23,19 @@ beep_error() {
 	beep -f 2000 -l 1200 -r 3
 }
 
-# Exit if device does note exist
+# Exit if device does not exist
 if [ -b $device ]
 then
 	echo "Found $device"
 else
 	echo "Cannot find $device"
+	beep_error
+	exit 1
+fi
+
+if ! [ -d $sourceDir ]
+then
+	echo "Cannot find $sourceDir"
 	beep_error
 	exit 1
 fi
