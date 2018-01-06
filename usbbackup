@@ -1,12 +1,14 @@
 #!/bin/bash
 
 mountdir="/media/usbbackup"
-device="/dev/sdd1"
+device="/dev/sde1"
 
 runfile="/var/run/usbbackup"
 
-sourceDir="/root/lala"
+sourceDir="/media/storage"
 targetDir="/media/usbbackup/Storage"
+
+email="ramon.kluijtmans@gmail.com"
 
 beep_start() {
 	# Starting beep
@@ -65,7 +67,9 @@ else
 fi
 
 # Rsync job
-rsync -avh $sourceDir/ $targetDir
+rsyncresult=`rsync -avh $sourceDir/ $targetDir`
+
+echo "$rsyncresult" >> mail -s "USB Backup" $email
 
 # Sync changes
 sync
