@@ -69,7 +69,7 @@ fi
 # Rsync job
 rsyncresult=`rsync -avh $sourceDir/ $targetDir`
 
-echo "$rsyncresult" >> mail -s "USB Backup" $email
+echo "$rsyncresult" | mail -s "USB Backup" $email
 
 # Sync changes
 sync
