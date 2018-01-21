@@ -83,3 +83,4 @@ echo "Spinning down $drive..."
 udisksctl power-off -b $drive
 
 rm $runfile
+beep_ok
