@@ -2,6 +2,7 @@
 
 mountdir="/media/usbbackup"
 device="/dev/sde1"
+drive="/dev/sde"
 
 runfile="/var/run/usbbackup"
 
@@ -76,7 +77,9 @@ sync
 
 # Unmount drive
 echo "Unmounting $device..."
-umount $mountdir
+udisksctl unmount -b $device
+
+echo "Spinning down $drive..."
+udisksctl power-off -b $drive
 
 rm $runfile
-beep_ok
