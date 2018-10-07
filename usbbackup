@@ -26,7 +26,7 @@ beep_error() {
 }
 
 # Exit if device does not exist
-if [ -b $device ]
+if [ -b /dev/disk/by-uuid/$device ]
 then
 	echo "Found $device"
 else
