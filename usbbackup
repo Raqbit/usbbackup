@@ -1,10 +1,9 @@
 #!/bin/bash
 
 mountdir="/media/usbbackup"
-device="/dev/sde1"
-drive="/dev/sde"
+device="65552126-c194-4fa6-be5f-15b6cab9cf91"
 
-runfile="/var/run/usbbackup"
+lockfile="/var/run/usbbackup.lock"
 
 sourceDir="/media/storage"
 targetDir="/media/usbbackup/Storage"
@@ -43,14 +42,11 @@ then
 	exit 1
 fi
 
-if [ -e $runfile ]
-then
+if ! lockfile -r 0 $lockfile; then
 	echo "Script already syncing"
 	beep_error
 	exit 1
 fi
-
-touch $runfile
 
 beep_start
 
@@ -60,8 +56,8 @@ beep_start
 # Mount drive if it is not already mounted
 if [ $(/bin/mount | grep -c $mountdir) != 1 ]
 then
-	echo "Mounting $device..."
-        /bin/mount $device $mountdir || exit 1
+	echo "Mounting drive with uuid $device..."
+        /bin/mount -U $device $mountdir || exit 1
         echo "$device is now mounted to $mountdir"
 else
         echo "$mountdir already mounted"
@@ -77,10 +73,6 @@ sync
 
 # Unmount drive
 echo "Unmounting $device..."
-udisksctl unmount -b $device
+udisksctl unmount -b /dev/disk/by-uuid/$device
 
-echo "Spinning down $drive..."
-udisksctl power-off -b $drive
-
-rm $runfile
-beep_ok
+rm -f $lockfile
